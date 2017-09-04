@@ -5,6 +5,9 @@
   "scripts": {
     "start": "micro"
   },
+  "engines": {
+    "node": "8.4.0"
+  },
   "dependencies": {
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",

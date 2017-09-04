@@ -18,45 +18,47 @@ app.get("/", (req, res) => {
     `);
     console.info(`Route '/' was called`)
 });
-app.listen(port, async () => {
+
+const fetchIt = async function() {
+    const browser = await puppeteer.launch({
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+        ],
+    });
+    console.log("brwoser launched");
+    const page = await browser.newPage();
+    console.log("page opened");
+    page.setViewport({width: 1200, height: 900});
+
+    await page.goto(url, {waitUntil: 'networkidle'});
+
+    const startInput = await page.$('#js-auskunft-autocomplete-from');
+    await startInput.click();
+    await page.type(startStation);
+
+    const targetInput = await page.$('#js-auskunft-autocomplete-to');
+    await targetInput.click();
+    await page.type(targetStation);
+
+    const submit = await page.$('.js-submit-btn');
+    await submit.click();
+
+    await page.waitForSelector('span.ontime');
+
+    const links = await page.evaluate(() => {
+        const anchors = Array.from(document.querySelectorAll('td.time'));
+        return anchors.map(anchor => anchor.textContent);
+    });
+    let message = links.join('\n');
+    console.log(message);
+    bot.sendMessage(11701970, message);
+    browser.close();
+}
+app.listen(port, () => {
     try {
-
         console.log("Express app listening on port:", port);
-        const browser = await puppeteer.launch({
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-            ],
-        });
-        console.log("brwoser launched");
-        const page = await browser.newPage();
-        console.log("page opened");
-        page.setViewport({width: 1200, height: 900});
-        await page.goto(url, {waitUntil: 'networkidle'});
-
-        const startInput = await page.$('#js-auskunft-autocomplete-from');
-        await startInput.click();
-        await page.type(startStation);
-
-        const targetInput = await page.$('#js-auskunft-autocomplete-to');
-        await targetInput.click();
-        await page.type(targetStation);
-
-        const submit = await page.$('.js-submit-btn');
-        await submit.click();
-
-        await page.waitForSelector('span.ontime');
-
-        const links = await page.evaluate(() => {
-            const anchors = Array.from(document.querySelectorAll('td.time'));
-            return anchors.map(anchor => anchor.textContent);
-        });
-        let message = links.join('\n');
-        console.log(message);
-        bot.sendMessage(11701970, message);
-        await page.screenshot({path: 'example2.png'});
-
-        browser.close();
+        setInterval(fetchIt, 5000);
     } catch(e) {
         console.log(e);
     }

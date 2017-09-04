@@ -58,7 +58,7 @@ const fetchIt = async function() {
 app.listen(port, () => {
     try {
         console.log("Express app listening on port:", port);
-        // stop :-D setInterval(fetchIt, 5000);
+        setInterval(fetchIt, 5000);
     } catch(e) {
         console.log(e);
     }

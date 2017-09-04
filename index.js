@@ -22,7 +22,12 @@ app.listen(port, async () => {
     try {
 
         console.log("Express app listening on port:", port);
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+            ],
+        });
         console.log("brwoser launched");
         const page = await browser.newPage();
         console.log("page opened");

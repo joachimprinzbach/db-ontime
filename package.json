@@ -1,0 +1,18 @@
+{
+  "name": "db-ontime",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "micro"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "micro": "^8.0.3",
+    "morgan": "~1.8.1",
+    "node-telegram-bot-api": "^0.28.0",
+    "puppeteer": "^0.9.0"
+  }
+}

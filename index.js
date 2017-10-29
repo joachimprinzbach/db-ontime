@@ -1,67 +1,97 @@
 const puppeteer = require('puppeteer');
+const cheerio = require('cheerio');
 const TelegramBot = require('node-telegram-bot-api');
-const url = 'https://www.bahn.de/p/view/index.shtml';
-const apiToken = '416417756:AAGax9aSZBoiM2PnHstUkPulJbJJYX-Tkvc';
-const bot = new TelegramBot(apiToken, {polling: false});
+const moment = require('moment');
+moment.locale('de');
 
-const startStation = 'Müllheim (Baden)';
-const targetStation = 'Basel SBB';
+const dbSearchPageURL = 'https://www.bahn.de/p/view/index.shtml';
+const apiToken = '416417756:AAGax9aSZBoiM2PnHstUkPulJbJJYX-Tkvc';
+
+const bot = new TelegramBot(apiToken, {polling: false});
+const groupChatId = -214638451;
+const joachimChatId = 11701970;
+const delay = 1000 * 60 * 5;
+
+const START_STATION = 'Müllheim (Baden)';
+const TARGET_STATION = 'Basel SBB';
+const toSelector = '#js-auskunft-autocomplete-to';
+const fromSelector = '#js-auskunft-autocomplete-from';
 
 const app = require("express")();
 const port = process.env.PORT || 4201;
-let salutation = "hans"; // our new variable
-bot.sendMessage(11701970, "App up and running");
-app.get("/", (req, res) => {
-    res.send(`
-    <h1>Hello, ${salutation}!</h1>
-    <h2>Express server is up and running on port ${port}</h2>
-    `);
-    console.info(`Route '/' was called`)
+
+const crawlForDelays = async function () {
+    const now = moment();
+    const isWorkingDay = !now.weekday() == (6 || 7);
+    const isInTime = now.hours() > 7 && now.hours() < 13;
+    if (!isWorkingDay && isInTime) {
+        const {browser, page} = await openBrowserWindow(dbSearchPageURL);
+        await insertText(page, fromSelector, START_STATION);
+        await insertText(page, toSelector, TARGET_STATION);
+
+        const submit = await page.$('.js-submit-btn');
+        await submit.click();
+
+        await page.waitForSelector('span.ontime');
+        await page.waitFor(2 * 1000);
+
+        const resultSelector = '#resultsOverview';
+        const content = await page.content();
+        const $ = cheerio.load(content);
+        const connections = $(resultSelector).children('.boxShadow.scheduledCon');
+        connections.each((i, con) => {
+            const trs = $(con).children('tr');
+            const firstRow = $(trs).eq(0).children('td');
+            const secondRow = $(trs).eq(1).children('td');
+            const startTime = $(firstRow).eq(1);
+            const startStationName = $(firstRow).eq(0).text();
+            const destinationStationName = $(secondRow).eq(0).text();
+            const scheduledDepartureTime = $(startTime)
+                .clone()
+                .children()
+                .remove()
+                .end()
+                .text();
+            const delay = $(startTime).children('span.ontime').first().text();
+            const delayTime = parseInt(delay.replace(/\+/g, ''), 10);
+            if (delayTime > 0) {
+                const text = "*VERSPÄTUNG!*\n" + scheduledDepartureTime + " Uhr\nvon: " + startStationName.trim() + "\nnach: " + destinationStationName.trim() + "\n*" + delayTime + " Minuten*";
+                bot.sendMessage(joachimChatId, text, {parse_mode: 'Markdown'});
+                console.log(text);
+            }
+        });
+        browser.close();
+    }
+}
+
+app.listen(port, () => {
+    try {
+        crawlForDelays();
+        setInterval(crawlForDelays, delay);
+    }
+    catch (e) {
+        console.log("Oh nooooo");
+        console.error(e);
+    }
 });
 
-const fetchIt = async function() {
+async function openBrowserWindow(urlToOpen) {
     const browser = await puppeteer.launch({
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
         ],
     });
-    console.log("brwoser launched");
     const page = await browser.newPage();
-    console.log("page opened");
     page.setViewport({width: 1200, height: 900});
-
-    await page.goto(url, {waitUntil: 'networkidle'});
-
-    const startInput = await page.$('#js-auskunft-autocomplete-from');
-    await startInput.click();
-    await page.type(startStation);
-
-    const targetInput = await page.$('#js-auskunft-autocomplete-to');
-    await targetInput.click();
-    await page.type(targetStation);
-
-    const submit = await page.$('.js-submit-btn');
-    await submit.click();
-
-    await page.waitForSelector('span.ontime');
-
-    const links = await page.evaluate(() => {
-        const anchors = Array.from(document.querySelectorAll('td.time'));
-        return anchors.map(anchor => anchor.textContent);
-    });
-    let message = links.join('\n');
-    console.log(message);
-    bot.sendMessage(11701970, message);
-    browser.close();
+    await page.goto(urlToOpen, {waitUntil: 'networkidle'});
+    return {browser, page};
 }
-app.listen(port, () => {
-    try {
-        console.log("Express app listening on port:", port);
-        // mute setInterval(fetchIt, 5000);
-    } catch(e) {
-        console.log(e);
-    }
-});
+
+async function insertText(page, selector, value) {
+    const input = await page.$(selector);
+    await input.click();
+    await page.type(selector, value);
+}
 
 module.exports = app;

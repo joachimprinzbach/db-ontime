@@ -20,11 +20,14 @@ const fromSelector = '#js-auskunft-autocomplete-from';
 const app = require("express")();
 const port = process.env.PORT || 4201;
 
+const startCrawlTime = moment({ hour:11, minute:0 });
+const finishCrawlTime = moment({ hour:12, minute:50 });;
+
 const crawlForDelays = async function () {
     const now = moment();
     const isWorkingDay = !now.weekday() == (6 || 7);
-    const isInTime = now.hours() > 7 && now.hours() < 13;
-    if (!isWorkingDay && isInTime) {
+    const isInTimeFrame = now.hours.isBetween(startCrawlTime, finishCrawlTime);
+    if (!isWorkingDay && isInTimeFrame) {
         const {browser, page} = await openBrowserWindow(dbSearchPageURL);
         await insertText(page, fromSelector, START_STATION);
         await insertText(page, toSelector, TARGET_STATION);
@@ -70,7 +73,6 @@ app.listen(port, () => {
         setInterval(crawlForDelays, delay);
     }
     catch (e) {
-        console.log("Oh nooooo");
         console.error(e);
     }
 });

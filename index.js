@@ -24,8 +24,10 @@ app.listen(port, () => {
     try {
         const greetingText = 'Hallo! Ich bin der DB Verspätungen Bot. In diesem Chat informiere ich über Verspätungen auf der Strecke von ' + START_STATION + ' nach ' + TARGET_STATION + '. Die Überprüfung erfolgt werktags zwischen ' + startCrawlTime.format('HH:mm') + ' und ' + finishCrawlTime.format('HH:mm');
         bot.sendMessage(chatId, greetingText, {parse_mode: 'Markdown'});
+
         const version = require('./package.json').version;
-        const versionText = "Bot is running version " + version;
+        const githubUrl = 'https://github.com/joachimprinzbach/db-ontime';
+        const versionText = "Bot is running version " + version + ". Report any issues on [Github]("+ githubUrl +")!";
         bot.sendMessage(chatId, versionText, {parse_mode: 'Markdown'});
         crawlForDelays(startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTime);
         setInterval(crawlForDelays, delay);

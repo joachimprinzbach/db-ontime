@@ -37,6 +37,10 @@ app.listen(port, () => {
     }
 });
 
+app.get('/', function (req, res) {
+    res.send('DB On Time is currently running ;-)');
+});
+
 const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTIme) => {
     const now = moment();
     const isWorkingDay = !now.weekday() == (6 || 7);

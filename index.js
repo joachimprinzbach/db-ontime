@@ -1,77 +1,33 @@
 const puppeteer = require('puppeteer');
-const cheerio = require('cheerio');
 const TelegramBot = require('node-telegram-bot-api');
 const moment = require('moment');
 moment.locale('de');
+const getDelays = require('./on-time/db-facade');
 
+const config = require('./config.json');
 const dbSearchPageURL = 'https://www.bahn.de/p/view/index.shtml';
-const apiToken = '416417756:AAGax9aSZBoiM2PnHstUkPulJbJJYX-Tkvc';
-
-const bot = new TelegramBot(apiToken, {polling: false});
-const groupChatId = -214638451;
-const joachimChatId = 11701970;
-const delay = 1000 * 60 * 5;
-
-const START_STATION = 'Müllheim (Baden)';
-const TARGET_STATION = 'Basel SBB';
-const toSelector = '#js-auskunft-autocomplete-to';
-const fromSelector = '#js-auskunft-autocomplete-from';
+const bot = new TelegramBot(config.token, {polling: false});
 
 const app = require("express")();
 const port = process.env.PORT || 4201;
 
-const startCrawlTime = moment({ hour:7, minute:0 });
-const finishCrawlTime = moment({ hour:12, minute:50 });;
-
-const crawlForDelays = async function () {
-    const now = moment();
-    const isWorkingDay = !now.weekday() == (6 || 7);
-    const isInTimeFrame = now.hours.isBetween(startCrawlTime, finishCrawlTime);
-    if (!isWorkingDay && isInTimeFrame) {
-        const {browser, page} = await openBrowserWindow(dbSearchPageURL);
-        await insertText(page, fromSelector, START_STATION);
-        await insertText(page, toSelector, TARGET_STATION);
-
-        const submit = await page.$('.js-submit-btn');
-        await submit.click();
-
-        await page.waitForSelector('span.ontime');
-        await page.waitFor(2 * 1000);
-
-        const resultSelector = '#resultsOverview';
-        const content = await page.content();
-        const $ = cheerio.load(content);
-        const connections = $(resultSelector).children('.boxShadow.scheduledCon');
-        connections.each((i, con) => {
-            const trs = $(con).children('tr');
-            const firstRow = $(trs).eq(0).children('td');
-            const secondRow = $(trs).eq(1).children('td');
-            const startTime = $(firstRow).eq(1);
-            const startStationName = $(firstRow).eq(0).text();
-            const destinationStationName = $(secondRow).eq(0).text();
-            const scheduledDepartureTime = $(startTime)
-                .clone()
-                .children()
-                .remove()
-                .end()
-                .text();
-            const delay = $(startTime).children('span.ontime').first().text();
-            const delayTime = parseInt(delay.replace(/\+/g, ''), 10);
-            if (delayTime > 0) {
-                const text = "*VERSPÄTUNG!*\n" + scheduledDepartureTime + " Uhr\nvon: " + startStationName.trim() + "\nnach: " + destinationStationName.trim() + "\n*" + delayTime + " Minuten*";
-                bot.sendMessage(joachimChatId, text, {parse_mode: 'Markdown'});
-                console.log(text);
-            }
-        });
-        browser.close();
-    }
-}
+const chatId = config.chatId;
 
 app.listen(port, () => {
+    const startCrawlTime = moment({hour: 7, minute: 0});
+    const finishCrawlTime = moment({hour: 7, minute: 59});
+    const delay = 1000 * 60 * 5;
+    const START_STATION = 'Müllheim (Baden)';
+    const TARGET_STATION = 'Basel SBB';
+    const shouldRunOnWeekend = false;
+    const exactDepartureTime = moment({hour: 7, minute: 49}).format('HH:mm');
     try {
         const greetingText = 'Hallo! Ich bin der DB Verspätungen Bot. In diesem Chat informiere ich über Verspätungen auf der Strecke von ' + START_STATION + ' nach ' + TARGET_STATION + '. Die Überprüfung erfolgt werktags zwischen ' + startCrawlTime.format('HH:mm') + ' und ' + finishCrawlTime.format('HH:mm');
-        bot.sendMessage(joachimChatId, greetingText, {parse_mode: 'Markdown'});
-        crawlForDelays();
+        bot.sendMessage(chatId, greetingText, {parse_mode: 'Markdown'});
+        const version = require('./package.json').version;
+        const versionText = "Bot is running version " + version;
+        bot.sendMessage(chatId, versionText, {parse_mode: 'Markdown'});
+        crawlForDelays(startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTime);
         setInterval(crawlForDelays, delay);
     }
     catch (e) {
@@ -79,7 +35,24 @@ app.listen(port, () => {
     }
 });
 
-async function openBrowserWindow(urlToOpen) {
+const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTIme) => {
+    const now = moment();
+    const isWorkingDay = !now.weekday() == (6 || 7);
+    const isInTimeFrame = now.isBetween(startCrawlTime, finishCrawlTime);
+    if ((isWorkingDay || shouldRunOnWeekend) && isInTimeFrame) {
+        const {browser, page} = await openBrowserWindow(dbSearchPageURL);
+        const messages = await getDelays(page, START_STATION, TARGET_STATION, exactDepartureTIme);
+        messages.forEach(msg => {
+            bot.sendMessage(chatId, msg, {parse_mode: 'Markdown'});
+        });
+        if (messages.length == 0 && config.alternateChatId) {
+            bot.sendMessage(config.alternateChatId, "No delays found", {parse_mode: 'Markdown'});
+        }
+        browser.close();
+    }
+}
+
+const openBrowserWindow = async urlToOpen => {
     const browser = await puppeteer.launch({
         args: [
             '--no-sandbox',
@@ -90,12 +63,6 @@ async function openBrowserWindow(urlToOpen) {
     page.setViewport({width: 1200, height: 900});
     await page.goto(urlToOpen, {waitUntil: 'networkidle'});
     return {browser, page};
-}
-
-async function insertText(page, selector, value) {
-    const input = await page.$(selector);
-    await input.click();
-    await page.type(selector, value);
-}
+};
 
 module.exports = app;

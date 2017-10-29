@@ -20,7 +20,7 @@ const fromSelector = '#js-auskunft-autocomplete-from';
 const app = require("express")();
 const port = process.env.PORT || 4201;
 
-const startCrawlTime = moment({ hour:11, minute:0 });
+const startCrawlTime = moment({ hour:7, minute:0 });
 const finishCrawlTime = moment({ hour:12, minute:50 });;
 
 const crawlForDelays = async function () {
@@ -69,6 +69,8 @@ const crawlForDelays = async function () {
 
 app.listen(port, () => {
     try {
+        const greetingText = 'Hallo! Ich bin der DB Verspätungen Bot. In diesem Chat informiere ich über Verspätungen auf der Strecke von ' + START_STATION + ' nach ' + TARGET_STATION + '. Die Überprüfung erfolgt werktags zwischen ' + startCrawlTime.format('HH:mm') + ' und ' + finishCrawlTime.format('HH:mm');
+        bot.sendMessage(joachimChatId, greetingText, {parse_mode: 'Markdown'});
         crawlForDelays();
         setInterval(crawlForDelays, delay);
     }

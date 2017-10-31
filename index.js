@@ -57,6 +57,9 @@ const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TA
             bot.sendMessage(chatId, 'No delays', {parse_mode: 'Markdown'});
         }
         browser.close();
+    } else {
+        console.log('Not checking. Outside of time window.')
+        bot.sendMessage(chatId, 'Not checking. Outside of time window.', {parse_mode: 'Markdown'});
     }
 }
 

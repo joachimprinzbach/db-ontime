@@ -28,38 +28,37 @@ app.listen(port, () => {
 
         const version = require('./package.json').version;
         const githubUrl = 'https://github.com/joachimprinzbach/db-ontime';
-        const versionText = "Bot is running version " + version + ". Report any issues on [Github]("+ githubUrl +")!";
+        const versionText = "Bot is running version " + version + ". Report any issues on [Github](" + githubUrl + ")!";
         bot.sendMessage(chatId, versionText, {parse_mode: 'Markdown'});
         crawlForDelays(startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTime);
         setInterval(crawlForDelays, delay);
     }
     catch (e) {
-        console.error(e);
+        console.error("Error occurred: ", e);
     }
-});
-
-app.get('/', function (req, res) {
-    res.send('DB On Time is currently running ;-)');
 });
 
 const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTIme) => {
     const now = moment();
     const isWorkingDay = !now.weekday() == (6 || 7);
     const isInTimeFrame = now.isBetween(startCrawlTime, finishCrawlTime);
+    console.log('shouldRunOnWeekend: ', shouldRunOnWeekend, ' isWorkingDay: ', isWorkingDay, ' isInTimeFrame: ', isInTimeFrame);
     if ((isWorkingDay || shouldRunOnWeekend) && isInTimeFrame) {
+        console.log('Crawling...');
         const {browser, page} = await openBrowserWindow(dbSearchPageURL);
         const messages = await getDelays(page, START_STATION, TARGET_STATION, exactDepartureTIme);
         messages.forEach(msg => {
+            console.log('Sending Telegram msg: ', msg);
             bot.sendMessage(chatId, msg, {parse_mode: 'Markdown'});
         });
         if (messages.length == 0) {
-            console.log('No delays found.')
-            bot.sendMessage(chatId, 'No delays', {parse_mode: 'Markdown'});
+            console.log('No delays found.');
+        } else {
+            console.log('Found delays. Message has been sent.');
         }
         browser.close();
     } else {
-        console.log('Not checking. Outside of time window.')
-        bot.sendMessage(chatId, 'Not checking. Outside of time window.', {parse_mode: 'Markdown'});
+        console.log('Not checking. Outside of time window.');
     }
 }
 

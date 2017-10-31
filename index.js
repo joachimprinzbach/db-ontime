@@ -40,7 +40,7 @@ app.listen(port, () => {
 
 const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTIme) => {
     const now = moment();
-    const isWorkingDay = !now.weekday() == (6 || 7);
+    const isWorkingDay = !(now.weekday() == 5 || now.weekday() == 6);
     const isInTimeFrame = now.isBetween(startCrawlTime, finishCrawlTime);
     console.log('shouldRunOnWeekend: ', shouldRunOnWeekend, ' isWorkingDay: ', isWorkingDay, ' isInTimeFrame: ', isInTimeFrame);
     if ((isWorkingDay || shouldRunOnWeekend) && isInTimeFrame) {

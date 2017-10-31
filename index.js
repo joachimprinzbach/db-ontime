@@ -11,7 +11,7 @@ const app = require("express")();
 const port = process.env.PORT || 4201;
 
 const chatId = process.env.TELEGRAM_CHAT_ID || config.chatId;
-const token = process.env.ELEGRAM_TOKEN || config.token;
+const token = process.env.TELEGRAM_TOKEN || config.token;
 const bot = new TelegramBot(token, {polling: false});
 
 app.listen(port, () => {

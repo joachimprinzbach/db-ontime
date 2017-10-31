@@ -1,7 +1,7 @@
 # db-ontime
-
 [![Greenkeeper badge](https://badges.greenkeeper.io/joachimprinzbach/db-ontime.svg)](https://greenkeeper.io/)
 [![Build Status](https://travis-ci.org/joachimprinzbach/db-ontime.svg?branch=master)](https://travis-ci.org/joachimprinzbach/db-ontime)
+
 Telegram Bot that sends messages for train delays
 
 ## Hacking on db-ontime

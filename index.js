@@ -6,17 +6,18 @@ const getDelays = require('./on-time/db-facade');
 
 const config = require('./config.json');
 const dbSearchPageURL = 'https://www.bahn.de/p/view/index.shtml';
-const bot = new TelegramBot(config.token, {polling: false});
 
 const app = require("express")();
 const port = process.env.PORT || 4201;
 
-const chatId = config.chatId;
+const chatId = process.env.TELEGRAM_CHAT_ID || config.chatId;
+const token = TELEGRAM_TOKEN || config.token;
+const bot = new TelegramBot(token, {polling: false});
 
 app.listen(port, () => {
     const startCrawlTime = moment({hour: 7, minute: 0});
     const finishCrawlTime = moment({hour: 7, minute: 59});
-    const delay = 1000 * 60 * 5;
+    const delay = 1000 * 60 * 3;
     const START_STATION = 'Müllheim (Baden)';
     const TARGET_STATION = 'Basel SBB';
     const shouldRunOnWeekend = false;
@@ -51,8 +52,9 @@ const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TA
         messages.forEach(msg => {
             bot.sendMessage(chatId, msg, {parse_mode: 'Markdown'});
         });
-        if (messages.length == 0 && config.alternateChatId) {
-            bot.sendMessage(config.alternateChatId, "No delays found", {parse_mode: 'Markdown'});
+        if (messages.length == 0) {
+            console.log('No delays found.')
+            bot.sendMessage(chatId, 'No delays', {parse_mode: 'Markdown'});
         }
         browser.close();
     }

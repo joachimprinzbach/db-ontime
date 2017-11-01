@@ -1,7 +1,8 @@
 const puppeteer = require('puppeteer');
 const TelegramBot = require('node-telegram-bot-api');
-const moment = require('moment');
+const moment = require('moment-timezone');
 moment.locale('de');
+moment.tz.setDefault("Europe/Berlin");
 const getDelays = require('./on-time/db-facade');
 
 const config = require('./config.json');
@@ -42,6 +43,7 @@ const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TA
     const now = moment();
     const isWorkingDay = !(now.weekday() == 5 || now.weekday() == 6);
     const isInTimeFrame = now.isBetween(startCrawlTime, finishCrawlTime);
+    console.log("Time: " + now.format('HH:mm'));
     console.log('shouldRunOnWeekend: ', shouldRunOnWeekend, ' isWorkingDay: ', isWorkingDay, ' isInTimeFrame: ', isInTimeFrame);
     if ((isWorkingDay || shouldRunOnWeekend) && isInTimeFrame) {
         console.log('Crawling...');

@@ -17,20 +17,23 @@ const bot = new TelegramBot(token, {polling: false});
 
 app.listen(port, () => {
     const startCrawlTime = moment({hour: 7, minute: 0});
-    const finishCrawlTime = moment({hour: 7, minute: 59});
+    const finishCrawlTime = moment({hour: 23, minute: 59});
     const delay = 1000 * 60 * 3;
     const START_STATION = 'Müllheim (Baden)';
     const TARGET_STATION = 'Basel SBB';
     const shouldRunOnWeekend = false;
     const exactDepartureTime = moment({hour: 7, minute: 49}).format('HH:mm');
+    const sendStartMessage = false;
     try {
-        const greetingText = 'Hallo! Ich bin der DB Verspätungen Bot. In diesem Chat informiere ich über Verspätungen auf der Strecke von ' + START_STATION + ' nach ' + TARGET_STATION + '. Die Überprüfung erfolgt werktags zwischen ' + startCrawlTime.format('HH:mm') + ' und ' + finishCrawlTime.format('HH:mm');
-        bot.sendMessage(chatId, greetingText, {parse_mode: 'Markdown'});
+        if (sendStartMessage) {
+            const greetingText = 'Hallo! Ich bin der DB Verspätungen Bot. In diesem Chat informiere ich über Verspätungen auf der Strecke von ' + START_STATION + ' nach ' + TARGET_STATION + '. Die Überprüfung erfolgt werktags zwischen ' + startCrawlTime.format('HH:mm') + ' und ' + finishCrawlTime.format('HH:mm');
+            bot.sendMessage(chatId, greetingText, {parse_mode: 'Markdown'});
+            const version = require('./package.json').version;
 
-        const version = require('./package.json').version;
-        const githubUrl = 'https://github.com/joachimprinzbach/db-ontime';
-        const versionText = "Bot is running version " + version + ". Report any issues on [Github](" + githubUrl + ")!";
-        bot.sendMessage(chatId, versionText, {parse_mode: 'Markdown'});
+            const githubUrl = 'https://github.com/joachimprinzbach/db-ontime';
+            const versionText = "Bot is running version " + version + ". Report any issues on [Github](" + githubUrl + ")!";
+            bot.sendMessage(chatId, versionText, {parse_mode: 'Markdown'});
+        }
         crawlForDelays(startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTime);
         setInterval(crawlForDelays, delay);
     }
@@ -44,6 +47,8 @@ const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TA
     const isWorkingDay = !(now.weekday() == 5 || now.weekday() == 6);
     const isInTimeFrame = now.isBetween(startCrawlTime, finishCrawlTime);
     console.log("Time: " + now.format('HH:mm'));
+    console.log("StartTime: " + startCrawlTime.format('HH:mm'));
+    console.log("FinishTime: " + finishCrawlTime.format('HH:mm'));
     console.log('shouldRunOnWeekend: ', shouldRunOnWeekend, ' isWorkingDay: ', isWorkingDay, ' isInTimeFrame: ', isInTimeFrame);
     if ((isWorkingDay || shouldRunOnWeekend) && isInTimeFrame) {
         console.log('Crawling...');

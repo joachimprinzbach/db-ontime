@@ -24,8 +24,6 @@ const getDelayMessages = async (page, exactDepartureTime) => {
             const text = "*VERSPÄTUNG!*\n" + scheduledDepartureTime + " Uhr\nvon: " + startStationName.trim() + "\nnach: " + destinationStationName.trim() + "\n*" + delayTime + " Minuten*";
             messages.push(text);
             console.log(text);
-        } else {
-            console.log('No delay found.')
         }
     });
     return messages;

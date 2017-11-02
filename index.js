@@ -34,8 +34,9 @@ app.listen(port, () => {
             const versionText = "Bot is running version " + version + ". Report any issues on [Github](" + githubUrl + ")!";
             bot.sendMessage(chatId, versionText, {parse_mode: 'Markdown'});
         }
-        crawlForDelays(startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTime);
-        setInterval(crawlForDelays, delay);
+        const crawlFunc = crawlForDelays.bind(this, startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTime);
+        crawlFunc();
+        setInterval(crawlFunc, delay);
     }
     catch (e) {
         console.error("Error occurred: ", e);

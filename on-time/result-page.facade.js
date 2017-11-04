@@ -42,7 +42,7 @@ const exactTimeIsMatching = (scheduledStartTime, exactDepartureTime) => {
 };
 
 const logConnectionInfo = (startStationName, destinationStationName, scheduledDepartureTime, delayTime) => {
-    console.log('Connection from ', startStationName, ' to ', destinationStationName, ' at ', scheduledDepartureTime, ' has a delay of: ', delayTime);
+    console.log('Connection from ' + startStationName + ' to ' + destinationStationName + ' at ' + scheduledDepartureTime + ' has a delay of: ' + delayTime);
 };
 
 module.exports = getDelayMessages;

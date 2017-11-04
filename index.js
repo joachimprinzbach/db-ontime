@@ -21,7 +21,7 @@ app.listen(port, () => {
     const delay = 1000 * 60 * 3;
     const START_STATION = 'Müllheim (Baden)';
     const TARGET_STATION = 'Basel SBB';
-    const shouldRunOnWeekend = false;
+    const shouldRunOnWeekend = true;
     const exactDepartureTime = moment({hour: 7, minute: 49}).format('HH:mm');
     const sendStartMessage = false;
     try {

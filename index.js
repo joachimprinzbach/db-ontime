@@ -17,8 +17,8 @@ const bot = new TelegramBot(token, {polling: false});
 
 app.listen(port, () => {
     const startCrawlTime = moment({hour: 7, minute: 0});
-    const finishCrawlTime = moment({hour: 23, minute: 59});
-    const delay = 1000 * 60 * 3;
+    const finishCrawlTime = moment({hour: 12, minute: 59});
+    const delay = 1000 * 60 * 4;
     const START_STATION = 'Müllheim (Baden)';
     const TARGET_STATION = 'Basel SBB';
     const shouldRunOnWeekend = true;

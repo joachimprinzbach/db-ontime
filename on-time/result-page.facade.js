@@ -20,6 +20,7 @@ const getDelayMessages = async (page, exactDepartureTime) => {
         const scheduledDepartureTime = $(scheduledStartTime).clone().children().remove().end().text();
         const delay = $(scheduledStartTime).children('span.ontime').first().text();
         const delayTime = parseInt(delay.replace(/\+/g, ''), 10);
+        logConnectionInfo(startStationName, destinationStationName, scheduledDepartureTime, delayTime);
         if (trainHasDelay(delayTime) && exactTimeIsMatching(scheduledDepartureTime, exactDepartureTime)) {
             const text = "*VERSPÄTUNG!*\n" + scheduledDepartureTime + " Uhr\nvon: " + startStationName.trim() + "\nnach: " + destinationStationName.trim() + "\n*" + delayTime + " Minuten*";
             messages.push(text);
@@ -37,7 +38,11 @@ const exactTimeIsMatching = (scheduledStartTime, exactDepartureTime) => {
     if(!exactDepartureTime) {
         return true;
     }
-    return scheduledStartTime == exactDepartureTime;
+    return scheduledStartTime === exactDepartureTime;
+};
+
+const logConnectionInfo = (startStationName, destinationStationName, scheduledDepartureTime, delayTime) => {
+    console.log('Connection from ', startStationName, ' to ', destinationStationName, ' at ', scheduledDepartureTime, ' has a delay of: ', delayTime);
 };
 
 module.exports = getDelayMessages;

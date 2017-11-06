@@ -51,7 +51,7 @@ const crawlForDelays = async (START_STATION, TARGET_STATION, shouldRunOnWeekend)
     if ((isWorkingDay || shouldRunOnWeekend) && isInTimeFrame) {
         console.log('Crawling...');
         const {browser, page} = await openBrowserWindow(dbSearchPageURL);
-        const messages = await getDelays(page, START_STATION, TARGET_STATION, exactDepartureTIme);
+        const messages = await getDelays(page, START_STATION, TARGET_STATION, exactDepartureTime);
         messages.forEach(msg => {
             console.log('Sending Telegram msg: ', msg);
             bot.sendMessage(chatId, msg, {parse_mode: 'Markdown'});

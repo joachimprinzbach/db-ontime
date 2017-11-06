@@ -16,25 +16,19 @@ const token = process.env.TELEGRAM_TOKEN || config.token;
 const bot = new TelegramBot(token, {polling: false});
 
 app.listen(port, () => {
-    const startCrawlTime = moment({hour: 7, minute: 0});
-    const finishCrawlTime = moment({hour: 12, minute: 59});
     const delay = 1000 * 60 * 4;
     const START_STATION = 'Müllheim (Baden)';
     const TARGET_STATION = 'Basel SBB';
     const shouldRunOnWeekend = true;
-    const exactDepartureTime = moment({hour: 7, minute: 49}).format('HH:mm');
     const sendStartMessage = false;
     try {
         if (sendStartMessage) {
-            const greetingText = 'Hallo! Ich bin der DB Verspätungen Bot. In diesem Chat informiere ich über Verspätungen auf der Strecke von ' + START_STATION + ' nach ' + TARGET_STATION + '. Die Überprüfung erfolgt werktags zwischen ' + startCrawlTime.format('HH:mm') + ' und ' + finishCrawlTime.format('HH:mm');
-            bot.sendMessage(chatId, greetingText, {parse_mode: 'Markdown'});
             const version = require('./package.json').version;
-
             const githubUrl = 'https://github.com/joachimprinzbach/db-ontime';
             const versionText = "Bot is running version " + version + ". Report any issues on [Github](" + githubUrl + ")!";
             bot.sendMessage(chatId, versionText, {parse_mode: 'Markdown'});
         }
-        const crawlFunc = crawlForDelays.bind(this, startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTime);
+        const crawlFunc = crawlForDelays.bind(this, START_STATION, TARGET_STATION, shouldRunOnWeekend);
         crawlFunc();
         setInterval(crawlFunc, delay);
     }
@@ -43,8 +37,11 @@ app.listen(port, () => {
     }
 });
 
-const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend, exactDepartureTIme) => {
+const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend) => {
     const now = moment();
+    const exactDepartureTime = moment({hour: 7, minute: 49}).format('HH:mm');
+    const startCrawlTime = moment({hour: 7, minute: 0});
+    const finishCrawlTime = moment({hour: 12, minute: 59});
     const isWorkingDay = !(now.weekday() == 5 || now.weekday() == 6);
     const isInTimeFrame = now.isBetween(startCrawlTime, finishCrawlTime);
     console.log("Time: " + now.format('HH:mm'));

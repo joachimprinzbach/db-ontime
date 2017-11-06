@@ -19,10 +19,14 @@ const getDelayMessages = async (page, exactDepartureTime) => {
         const destinationStationName = $(arrivalRow).eq(0).text();
         const scheduledDepartureTime = $(scheduledStartTime).clone().children().remove().end().text();
         const delay = $(scheduledStartTime).children('span.ontime').first().text();
+        const hardDelay = $(scheduledStartTime).children('span.delay').first().text();
         const delayTime = parseInt(delay.replace(/\+/g, ''), 10);
+        const hardDelayTime = parseInt(hardDelay.replace(/\+/g, ''), 10);
         logConnectionInfo(startStationName, destinationStationName, scheduledDepartureTime, delayTime);
-        if (trainHasDelay(delayTime) && exactTimeIsMatching(scheduledDepartureTime, exactDepartureTime)) {
-            const text = "*VERSPÄTUNG!*\n" + scheduledDepartureTime + " Uhr\nvon: " + startStationName.trim() + "\nnach: " + destinationStationName.trim() + "\n*" + delayTime + " Minuten*";
+        const exactTimeIsMatching2 = exactTimeIsMatching(scheduledDepartureTime, exactDepartureTime);
+        console.log("HANS" + exactTimeIsMatching2);
+        if (trainHasDelay(delayTime, hardDelayTime) && !exactTimeIsMatching2) {
+            const text = "*VERSPÄTUNG!*\n" + scheduledDepartureTime + " Uhr\nvon: " + startStationName.trim() + "\nnach: " + destinationStationName.trim() + "\n*" + hardDelayTime ? hardDelayTime : delayTime  + " Minuten*";
             messages.push(text);
             console.log(text);
         }
@@ -30,8 +34,9 @@ const getDelayMessages = async (page, exactDepartureTime) => {
     return messages;
 };
 
-const trainHasDelay = delayTime => {
-    return delayTime > delayThreshold;
+const trainHasDelay = (delayTime, hardDelayTime) => {
+    const hasDelay = (delayTime > delayThreshold) || (hardDelayTime > delayThreshold);
+    return hasDelay;
 };
 
 const exactTimeIsMatching = (scheduledStartTime, exactDepartureTime) => {

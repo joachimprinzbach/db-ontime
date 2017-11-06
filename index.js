@@ -37,7 +37,7 @@ app.listen(port, () => {
     }
 });
 
-const crawlForDelays = async (startCrawlTime, finishCrawlTime, START_STATION, TARGET_STATION, shouldRunOnWeekend) => {
+const crawlForDelays = async (START_STATION, TARGET_STATION, shouldRunOnWeekend) => {
     const now = moment();
     const exactDepartureTime = moment({hour: 7, minute: 49}).format('HH:mm');
     const startCrawlTime = moment({hour: 7, minute: 0});

@@ -28,7 +28,7 @@ app.listen(port, () => {
             const versionText = "Bot is running version " + version + ". Report any issues on [Github](" + githubUrl + ")!";
             bot.sendMessage(chatId, versionText, {parse_mode: 'Markdown'});
         }
-        const crawlFunc = crawlForDelays.bind(this, START_STATION, TARGET_STATION, shouldRunOnWeekend);
+        const crawlFunc = crawlForDelays.bind(this, TARGET_STATION, START_STATION, shouldRunOnWeekend);
         crawlFunc();
         setInterval(crawlFunc, delay);
     }
@@ -39,16 +39,16 @@ app.listen(port, () => {
 
 const crawlForDelays = async (START_STATION, TARGET_STATION, shouldRunOnWeekend) => {
     const now = moment();
-    const exactDepartureTime = moment({hour: 7, minute: 49}).format('HH:mm');
+    const exactDepartureTime = moment({hour: 21, minute: 13}).format('HH:mm');
     const startCrawlTime = moment({hour: 7, minute: 0});
-    const finishCrawlTime = moment({hour: 12, minute: 59});
+    const finishCrawlTime = moment({hour: 23, minute: 59});
     const isWorkingDay = !(now.weekday() == 5 || now.weekday() == 6);
     const isInTimeFrame = now.isBetween(startCrawlTime, finishCrawlTime);
     console.log("Time: " + now.format('HH:mm'));
     console.log("StartTime: " + startCrawlTime.format('HH:mm'));
     console.log("FinishTime: " + finishCrawlTime.format('HH:mm'));
     console.log('shouldRunOnWeekend: ', shouldRunOnWeekend, ' isWorkingDay: ', isWorkingDay, ' isInTimeFrame: ', isInTimeFrame);
-    if ((isWorkingDay || shouldRunOnWeekend) && isInTimeFrame) {
+    if ((isWorkingDay || shouldRunOnWeekend) && true) {
         console.log('Crawling...');
         const {browser, page} = await openBrowserWindow(dbSearchPageURL);
         const messages = await getDelays(page, START_STATION, TARGET_STATION, exactDepartureTime);

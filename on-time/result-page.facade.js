@@ -27,10 +27,10 @@ const getDelayMessages = async (page, exactDepartureTime) => {
             console.log(hardDelayTime);
             console.log(delayTime);
             let finalDelayTime = hardDelayTime;
-            if(isNaN(hardDelayTime)) {
+            if (isNaN(hardDelayTime)) {
                 finalDelayTime = delayTime;
-            }    
-            const text = "*VERSPÄTUNG!*\n" + scheduledDepartureTime + " Uhr\nvon: " + startStationName.trim() + "\nnach: " + destinationStationName.trim() + "\n*" + finalDelayTime  + " Minuten*";
+            }
+            const text = "*+" + finalDelayTime + " - VERSPÄTUNG!*\n" + scheduledDepartureTime + " Uhr\nvon: " + startStationName.trim() + "\nnach: " + destinationStationName.trim() + "\n*" + finalDelayTime + " Minuten*";
             messages.push(text);
             console.log(text);
         }
@@ -44,7 +44,7 @@ const trainHasDelay = (delayTime, hardDelayTime) => {
 };
 
 const exactTimeIsMatching = (scheduledStartTime, exactDepartureTime) => {
-    if(!exactDepartureTime) {
+    if (!exactDepartureTime) {
         return true;
     }
     return scheduledStartTime.trim() == exactDepartureTime.trim();

@@ -48,7 +48,7 @@ const crawlForDelays = async (START_STATION, TARGET_STATION, shouldRunOnWeekend)
     console.log("StartTime: " + startCrawlTime.format('HH:mm'));
     console.log("FinishTime: " + finishCrawlTime.format('HH:mm'));
     console.log('shouldRunOnWeekend: ', shouldRunOnWeekend, ' isWorkingDay: ', isWorkingDay, ' isInTimeFrame: ', isInTimeFrame);
-    if ((isWorkingDay || shouldRunOnWeekend) && true) {
+    if ((isWorkingDay || shouldRunOnWeekend) && isInTimeFrame) {
         console.log('Crawling...');
         const {browser, page} = await openBrowserWindow(dbSearchPageURL);
         const messages = await getDelays(page, START_STATION, TARGET_STATION, exactDepartureTime);

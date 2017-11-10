@@ -41,7 +41,7 @@ const crawlForDelays = async (START_STATION, TARGET_STATION, shouldRunOnWeekend)
     const now = moment();
     const exactDepartureTime = moment({hour: 7, minute: 49}).format('HH:mm');
     const startCrawlTime = moment({hour: 6, minute: 50});
-    const finishCrawlTime = moment({hour: 7, minute: 1});
+    const finishCrawlTime = moment({hour: 9, minute: 1});
     const isWorkingDay = !(now.weekday() == 5 || now.weekday() == 6);
     const isInTimeFrame = now.isBetween(startCrawlTime, finishCrawlTime);
     console.log("Time: " + now.format('HH:mm'));

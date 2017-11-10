@@ -3,9 +3,7 @@ const delayThreshold = 0;
 
 const getDelayMessages = async (page, exactDepartureTime) => {
     const messages = [];
-    await page.waitForSelector('span.ontime');
     await page.waitFor(2 * 1000);
-    await page.screenshot({path: 'screenshot.png'});
     const resultSelector = '#resultsOverview';
     const content = await page.content();
     const $ = cheerio.load(content);

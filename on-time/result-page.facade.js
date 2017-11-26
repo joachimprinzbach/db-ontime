@@ -1,7 +1,6 @@
 const cheerio = require('cheerio');
-const delayThreshold = 0;
 
-const getDelayMessages = async (page, exactDepartureTime) => {
+const getDelayMessages = async (page, exactDepartureTime, minDelay) => {
     const messages = [];
     await page.waitFor(2 * 1000);
     const resultSelector = '#resultsOverview';
@@ -12,7 +11,7 @@ const getDelayMessages = async (page, exactDepartureTime) => {
         const tableRows = $(connection).children('tr');
         const departureRow = $(tableRows).eq(0).children('td');
         const arrivalRow = $(tableRows).eq(1).children('td');
-        const scheduledStartTime = $(departureRow).eq(1);
+        const scheduledStartTime = $(departureRow).eq(2);
         const startStationName = $(departureRow).eq(0).text();
         const destinationStationName = $(arrivalRow).eq(0).text();
         const scheduledDepartureTime = $(scheduledStartTime).clone().children().remove().end().text();
@@ -20,14 +19,12 @@ const getDelayMessages = async (page, exactDepartureTime) => {
         const hardDelay = $(scheduledStartTime).children('span.delay').first().text();
         const delayTime = parseInt(delay.replace(/\+/g, ''), 10);
         const hardDelayTime = parseInt(hardDelay.replace(/\+/g, ''), 10);
-        logConnectionInfo(startStationName, destinationStationName, scheduledDepartureTime, delayTime);
-        if (trainHasDelay(delayTime, hardDelayTime) && exactTimeIsMatching(scheduledDepartureTime, exactDepartureTime)) {
-            console.log(hardDelayTime);
-            console.log(delayTime);
-            let finalDelayTime = hardDelayTime;
-            if (isNaN(hardDelayTime)) {
-                finalDelayTime = delayTime;
-            }
+        let finalDelayTime = hardDelayTime;
+        if (isNaN(hardDelayTime)) {
+            finalDelayTime = delayTime;
+        }
+        logConnectionInfo(startStationName, destinationStationName, scheduledDepartureTime, finalDelayTime);
+        if (trainHasDelay(delayTime, hardDelayTime, minDelay) && exactTimeIsMatching(scheduledDepartureTime, exactDepartureTime)) {
             const text = "*+" + finalDelayTime + " - VERSPÄTUNG!*\n" + scheduledDepartureTime + " Uhr\nvon: " + startStationName.trim() + "\nnach: " + destinationStationName.trim() + "\n*" + finalDelayTime + " Minuten*";
             messages.push(text);
             console.log(text);
@@ -36,8 +33,8 @@ const getDelayMessages = async (page, exactDepartureTime) => {
     return messages;
 };
 
-const trainHasDelay = (delayTime, hardDelayTime) => {
-    const hasDelay = (delayTime > delayThreshold) || (hardDelayTime > delayThreshold);
+const trainHasDelay = (delayTime, hardDelayTime, minDelay) => {
+    const hasDelay = (delayTime > minDelay) || (hardDelayTime > minDelay);
     return hasDelay;
 };
 

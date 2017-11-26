@@ -1,4 +1,26 @@
 {
-  "chatId": "123456789",
-  "token": "12345678:ASADJKJSADJ2jbJLJKBJB-Abcd"
+  "token": "12345678:ASADJKJSADJ2jbJLJKBJB-Abcd",
+  "delay": "4",
+  "connections": [
+    {
+      "connectionId": "1",
+      "chatId": "123456789",
+      "start": "Müllheim (Baden)",
+      "destination": "Basel SBB",
+      "exactConnection": {
+        "hour": "7",
+        "minute": "49"
+      },
+      "crawlStart": {
+        "hour": "6",
+        "minute": "50"
+      },
+      "crawlEnd": {
+        "hour": "9",
+        "minute": "1"
+      },
+      "runOnWeekend": false,
+      "minDelay": "1"
+    }
+  ]
 }

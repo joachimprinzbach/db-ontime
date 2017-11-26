@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "test": "mocha"
+    "test": "mocha *.spec.js"
   },
   "engines": {
     "node": "8.4.0"

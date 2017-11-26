@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "start": "micro"
+    "test": "mocha"
   },
   "engines": {
     "node": "8.4.0"
@@ -20,5 +20,8 @@
     "morgan": "1.9.0",
     "node-telegram-bot-api": "0.29.0",
     "puppeteer": "0.12.0"
+  },
+  "devDependencies": {
+    "mocha": "4.0.1"
   }
 }

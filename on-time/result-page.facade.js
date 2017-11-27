@@ -11,7 +11,7 @@ const getDelayMessages = async (page, exactDepartureTime, minDelay) => {
         const tableRows = $(connection).children('tr');
         const departureRow = $(tableRows).eq(0).children('td');
         const arrivalRow = $(tableRows).eq(1).children('td');
-        const scheduledStartTime = $(departureRow).eq(2);
+        const scheduledStartTime = $(departureRow).eq(1);
         const startStationName = $(departureRow).eq(0).text();
         const destinationStationName = $(arrivalRow).eq(0).text();
         const scheduledDepartureTime = $(scheduledStartTime).clone().children().remove().end().text();

@@ -21,6 +21,126 @@
       },
       "runOnWeekend": false,
       "minDelay": "1"
+    },
+    {
+      "connectionId": "2",
+      "chatId": "123456789",
+      "start": "Freiburg(Breisgau) Hbf",
+      "destination": "Basel SBB",
+      "exactConnection": {
+        "hour": "7",
+        "minute": "02"
+      },
+      "crawlStart": {
+        "hour": "6",
+        "minute": "1"
+      },
+      "crawlEnd": {
+        "hour": "7",
+        "minute": "10"
+      },
+      "runOnWeekend": false,
+      "minDelay": "10"
+    },
+    {
+      "connectionId": "2",
+      "chatId": "123456789",
+      "start": "Basel SBB",
+      "destination": "Freiburg(Breisgau) Hbf",
+      "exactConnection": {
+        "hour": "17",
+        "minute": "06"
+      },
+      "crawlStart": {
+        "hour": "16",
+        "minute": "30"
+      },
+      "crawlEnd": {
+        "hour": "17",
+        "minute": "10"
+      },
+      "runOnWeekend": false,
+      "minDelay": "5"
+    },
+    {
+      "connectionId": "3",
+      "chatId": "123456789",
+      "start": "Müllheim (Baden)",
+      "destination": "Basel SBB",
+      "exactConnection": {
+        "hour": "5",
+        "minute": "27"
+      },
+      "crawlStart": {
+        "hour": "5",
+        "minute": "1"
+      },
+      "crawlEnd": {
+        "hour": "5",
+        "minute": "30"
+      },
+      "runOnWeekend": false,
+      "minDelay": "5"
+    },
+    {
+      "connectionId": "3",
+      "chatId": "123456789",
+      "start": "Müllheim (Baden)",
+      "destination": "Basel SBB",
+      "exactConnection": {
+        "hour": "5",
+        "minute": "47"
+      },
+      "crawlStart": {
+        "hour": "5",
+        "minute": "1"
+      },
+      "crawlEnd": {
+        "hour": "5",
+        "minute": "50"
+      },
+      "runOnWeekend": false,
+      "minDelay": "5"
+    },
+    {
+      "connectionId": "3",
+      "chatId": "123456789",
+      "start": "Müllheim (Baden)",
+      "destination": "Basel SBB",
+      "exactConnection": {
+        "hour": "6",
+        "minute": "27"
+      },
+      "crawlStart": {
+        "hour": "5",
+        "minute": "1"
+      },
+      "crawlEnd": {
+        "hour": "6",
+        "minute": "30"
+      },
+      "runOnWeekend": false,
+      "minDelay": "5"
+    },
+    {
+      "connectionId": "4",
+      "chatId": "123456789",
+      "start": "Bad Bellingen",
+      "destination": "Basel SBB",
+      "exactConnection": {
+        "hour": "6",
+        "minute": "34"
+      },
+      "crawlStart": {
+        "hour": "6",
+        "minute": "1"
+      },
+      "crawlEnd": {
+        "hour": "6",
+        "minute": "40"
+      },
+      "runOnWeekend": false,
+      "minDelay": "5"
     }
   ]
 }

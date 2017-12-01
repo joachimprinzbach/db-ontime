@@ -25,7 +25,7 @@ const getDelayMessages = async (page, exactDepartureTime, minDelay) => {
         }
         logConnectionInfo(startStationName, destinationStationName, scheduledDepartureTime, finalDelayTime);
         if (trainHasDelay(delayTime, hardDelayTime, minDelay) && exactTimeIsMatching(scheduledDepartureTime, exactDepartureTime)) {
-            const text = "*+" + finalDelayTime + " - VERSPÄTUNG!*\n" + scheduledDepartureTime + " Uhr\nvon: " + startStationName.trim() + "\nnach: " + destinationStationName.trim() + "\n*" + finalDelayTime + " Minuten*";
+            const text = "*" + scheduledDepartureTime + "Uhr +" + finalDelayTime + "*\n" + startStationName.trim() + " → " + destinationStationName.trim() + "\n";
             messages.push(text);
             console.log(text);
         }

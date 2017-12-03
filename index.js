@@ -6,7 +6,7 @@ const crawl = require('./on-time/crawl');
 app.listen(port, () => {
     const delay = 1000 * 60 * config.delay;
     try {
-        const crawlFunc = crawl.bind(this);
+        const crawlFunc = crawl.crawlForDelays.bind(this);
         crawlFunc();
         setInterval(crawlFunc, delay);
     } catch (error) {

@@ -1,4 +1,4 @@
-const getDelayMessagesFor = require('./db.facade');
+const getDelayMessagesFor = require('./db/db.facade');
 const getChatRoomId = require('./chat-room.repository');
 const moment = require('moment-timezone');
 const config = require('../config.json');
@@ -39,4 +39,8 @@ const shouldCheckForDelaysOf = (connection) => {
     return (isWorkingDay || connection.runOnWeekend) && isInTimeFrame;
 };
 
-module.exports = crawlForDelays;
+module.exports = {
+    crawlForDelays,
+    sendDelayMessagesToChatRoom,
+    shouldCheckForDelaysOf
+};

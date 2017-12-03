@@ -1,4 +1,4 @@
-const getDelayMessagesFor = require('./db-facade');
+const getDelayMessagesFor = require('./db.facade');
 const getChatRoomId = require('./chat-room.repository');
 const moment = require('moment-timezone');
 const config = require('../config.json');

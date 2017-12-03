@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
-    "test": "mocha *.spec.js"
+    "test": "mocha on-time/**/*.spec.js"
   },
   "engines": {
     "node": "8.4.0"

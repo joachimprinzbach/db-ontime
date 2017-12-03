@@ -20,7 +20,7 @@ const crawlForDelays = async () => {
     }
 };
 
-async function sendDelayMessagesToChatRoom(chatRoomId, messages) {
+const sendDelayMessagesToChatRoom = async (chatRoomId, messages) => {
     messages.forEach(msg => {
         console.log('Sending Telegram msg: ', msg);
         bot.sendMessage(chatRoomId, msg, {parse_mode: 'Markdown'});
@@ -28,16 +28,15 @@ async function sendDelayMessagesToChatRoom(chatRoomId, messages) {
     if (messages.length == 0) {
         console.log('No delays found.');
     }
-}
+};
 
-
-module.exports = crawlForDelays;
-
-function shouldCheckForDelaysOf(connection) {
+const shouldCheckForDelaysOf = (connection) => {
     const now = moment();
     const startCrawlTime = moment(connection.crawlStart);
     const finishCrawlTime = moment(connection.crawlEnd);
     const isWorkingDay = !(now.weekday() == 5 || now.weekday() == 6);
     const isInTimeFrame = now.isBetween(startCrawlTime, finishCrawlTime);
     return (isWorkingDay || connection.runOnWeekend) && isInTimeFrame;
-}
+};
+
+module.exports = crawlForDelays;

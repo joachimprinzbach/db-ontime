@@ -12,7 +12,7 @@ const searchForConnections = async (page, startStation, targetStation, exactDepa
     await searchButton.click();
 };
 
-async function insertTime(page, exactDepartureTime) {
+const insertTime = async (page, exactDepartureTime) => {
     const timeInput = await page.$(timeSelector);
     await timeInput.click();
     page.keyboard.press('ArrowRight');

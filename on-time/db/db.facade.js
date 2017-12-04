@@ -13,9 +13,8 @@ const getDelayMessagesFor = async (connection) => {
     const targetStation = connection.destination;
     const exactDepartureTime = moment(connection.exactConnection).format('HH:mm');
     const minDelay = connection.minDelay;
-
     await searchForConnections(page, startStation, targetStation, exactDepartureTime);
-    const delayMessages = getDelayMessages(page, exactDepartureTime, minDelay);
+    const delayMessages = await getDelayMessages(page, exactDepartureTime, minDelay);
     browser.close();
     return delayMessages;
 

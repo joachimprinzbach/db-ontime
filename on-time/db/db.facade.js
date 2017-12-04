@@ -2,6 +2,7 @@ const searchForConnections = require('./search-page.facade');
 const getDelayMessages = require('./result-page.facade');
 const dbSearchPageURL = 'https://www.bahn.de/p/view/index.shtml';
 const moment = require('moment-timezone');
+const puppeteer = require('puppeteer');
 moment.locale('de');
 moment.tz.setDefault("Europe/Berlin");
 

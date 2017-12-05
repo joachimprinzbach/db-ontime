@@ -1,6 +1,7 @@
-const crawl = require('./crawl');
+const sinon = require('sinon');
 const moment = require('moment');
 const assert = require('assert');
+const crawl = require('./crawl');
 
 describe('crawl', () => {
     describe('shouldCheckForDelaysOf', () => {
@@ -92,4 +93,36 @@ describe('crawl', () => {
             assert.equal(false, shouldCheck);
         });
     });
+
+    describe('sendDelayMessagesToChatRoom', () => {
+        it('should send multiple messages', async () => {
+            const botFake = {
+                sendMessage: (id, msg, options) => {}
+            };
+            const stub = sinon.stub(botFake, 'sendMessage');
+            const chatRoomId = 'id';
+            const messages = ['msg1', 'second message'];
+
+            await crawl.sendDelayMessagesToChatRoom(botFake, chatRoomId, messages);
+
+            sinon.assert.calledTwice(stub);
+            sinon.assert.calledWith(stub, chatRoomId, messages[0], {parse_mode: 'Markdown'});
+            sinon.assert.calledWith(stub, chatRoomId, messages[1], {parse_mode: 'Markdown'});
+        });
+
+        it('should not send messages with telegram when no msg has ben created', async () => {
+            const botFake = {
+                sendMessage: (id, msg, options) => {}
+            };
+            const stub = sinon.stub(botFake, 'sendMessage');
+            const chatRoomId = 'id';
+            const messages = [];
+
+            await crawl.sendDelayMessagesToChatRoom(botFake, chatRoomId, messages);
+
+            sinon.assert.notCalled(stub);
+        });
+
+    });
 });
+

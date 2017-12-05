@@ -1,26 +1,22 @@
 const getDelayMessagesFor = require('./db/db.facade');
 const getChatRoomId = require('./chat-room.repository');
 const moment = require('moment-timezone');
-const config = require('../config.json');
-const TelegramBot = require('node-telegram-bot-api');
-const token = process.env.TELEGRAM_TOKEN || config.token;
-const bot = new TelegramBot(token, {polling: false});
 moment.locale('de');
 moment.tz.setDefault("Europe/Berlin");
 
-const crawlForDelays = async () => {
-    for (let connection of config.connections) {
+const crawlForDelays = async (bot, connections) => {
+    for (let connection of connections) {
         if (shouldCheckForDelaysOf(connection)) {
             const chatRoomId = getChatRoomId(connection);
             const messages = await getDelayMessagesFor(connection);
-            await sendDelayMessagesToChatRoom(chatRoomId, messages);
+            await sendDelayMessagesToChatRoom(bot, chatRoomId, messages);
         } else {
             console.log('Not checking. Outside of time window.');
         }
     }
 };
 
-const sendDelayMessagesToChatRoom = async (chatRoomId, messages) => {
+const sendDelayMessagesToChatRoom = async (bot, chatRoomId, messages) => {
     messages.forEach(msg => {
         console.log('Sending Telegram msg: ', msg);
         bot.sendMessage(chatRoomId, msg, {parse_mode: 'Markdown'});

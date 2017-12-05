@@ -87,6 +87,34 @@ describe('resultPage', () => {
 
             assert.equal(true, hasDelay);
         });
+    });
 
+    describe('exactTimeIsMatching', () => {
+       it('should be an exact time when no exactDepartureTime is provided', () => {
+           const scheduledStartTime = "21:13";
+           const exactDepartureTime = undefined;
+
+           const isExactTime = resultPage.exactTimeIsMatching(scheduledStartTime, exactDepartureTime);
+
+           assert.equal(true, isExactTime);
+       });
+
+        it('should be an exact time when exactDepartureTime and scheduledStartTimeare equal', () => {
+            const scheduledStartTime = "22:42";
+            const exactDepartureTime = "22:42";
+
+            const isExactTime = resultPage.exactTimeIsMatching(scheduledStartTime, exactDepartureTime);
+
+            assert.equal(true, isExactTime);
+        });
+
+        it('should not be an exact time when exactDepartureTime and scheduledStartTimeare are different', () => {
+            const scheduledStartTime = "22:42";
+            const exactDepartureTime = "13:32";
+
+            const isExactTime = resultPage.exactTimeIsMatching(scheduledStartTime, exactDepartureTime);
+
+            assert.equal(false, isExactTime);
+        });
     });
 });

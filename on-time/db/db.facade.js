@@ -1,5 +1,5 @@
 const searchForConnections = require('./search-page.facade');
-const getDelayMessages = require('./result-page.facade');
+const resultpage = require('./result-page.facade');
 const dbSearchPageURL = 'https://www.bahn.de/p/view/index.shtml';
 const moment = require('moment-timezone');
 const puppeteer = require('puppeteer');
@@ -14,7 +14,7 @@ const getDelayMessagesFor = async (connection) => {
     const exactDepartureTime = moment(connection.exactConnection).format('HH:mm');
     const minDelay = connection.minDelay;
     await searchForConnections(page, startStation, targetStation, exactDepartureTime);
-    const delayMessages = await getDelayMessages(page, exactDepartureTime, minDelay);
+    const delayMessages = await resultpage.getDelayMessages(page, exactDepartureTime, minDelay);
     browser.close();
     return delayMessages;
 

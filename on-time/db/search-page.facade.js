@@ -26,7 +26,7 @@ const insertTime = async (page, exactDepartureTime) => {
     page.keyboard.press('Backspace');
     page.keyboard.press('Backspace');
     await page.type(timeSelector, exactDepartureTime);
-}
+};
 
 const insertText = async (page, selector, value) => {
     const input = await page.$(selector);

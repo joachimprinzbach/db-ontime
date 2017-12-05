@@ -4,6 +4,20 @@ const assert = require('assert');
 const crawl = require('./crawl');
 
 describe('crawl', () => {
+    let botFake = {
+        sendMessage: (id, msg, options) => {
+        }
+    };
+    let botStub;
+
+    beforeEach(() => {
+        botStub = sinon.stub(botFake, 'sendMessage');
+    });
+
+    afterEach(() => {
+        botStub.restore();
+    });
+
     describe('shouldCheckForDelaysOf', () => {
         it('should determine timeframe correctly', () => {
             let MONDAY_6_32 = 1512365544000;
@@ -96,33 +110,35 @@ describe('crawl', () => {
 
     describe('sendDelayMessagesToChatRoom', () => {
         it('should send multiple messages', async () => {
-            const botFake = {
-                sendMessage: (id, msg, options) => {}
-            };
-            const stub = sinon.stub(botFake, 'sendMessage');
             const chatRoomId = 'id';
             const messages = ['msg1', 'second message'];
 
             await crawl.sendDelayMessagesToChatRoom(botFake, chatRoomId, messages);
 
-            sinon.assert.calledTwice(stub);
-            sinon.assert.calledWith(stub, chatRoomId, messages[0], {parse_mode: 'Markdown'});
-            sinon.assert.calledWith(stub, chatRoomId, messages[1], {parse_mode: 'Markdown'});
+            sinon.assert.calledTwice(botStub);
+            sinon.assert.calledWith(botStub, chatRoomId, messages[0], {parse_mode: 'Markdown'});
+            sinon.assert.calledWith(botStub, chatRoomId, messages[1], {parse_mode: 'Markdown'});
         });
 
         it('should not send messages with telegram when no msg has ben created', async () => {
-            const botFake = {
-                sendMessage: (id, msg, options) => {}
-            };
-            const stub = sinon.stub(botFake, 'sendMessage');
             const chatRoomId = 'id';
             const messages = [];
 
             await crawl.sendDelayMessagesToChatRoom(botFake, chatRoomId, messages);
 
-            sinon.assert.notCalled(stub);
+            sinon.assert.notCalled(botStub);
         });
 
     });
+
+    describe('crawlForDelays', () => {
+        it('should not do anything when no connections are configured', async () => {
+            const connections  = [];
+
+            await crawl.crawlForDelays(botFake, connections);
+
+            sinon.assert.notCalled(botStub);
+        });
+    })
 });
 

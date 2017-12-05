@@ -46,4 +46,47 @@ describe('resultPage', () => {
             });
         });
     });
+
+    describe('trainHasDelay', () => {
+        it('should determine a delay correctly', () => {
+            const delayTime = 5;
+            const hardDelayTime = 5;
+            const minDelay = 0;
+
+            const hasDelay = resultPage.trainHasDelay(delayTime, hardDelayTime, minDelay);
+
+            assert.equal(true, hasDelay);
+        });
+
+        it('should determine a delay correctly when minDelay is not too high', () => {
+            const delayTime = 5;
+            const hardDelayTime = 5;
+            const minDelay = 5;
+
+            const hasDelay = resultPage.trainHasDelay(delayTime, hardDelayTime, minDelay);
+
+            assert.equal(false, hasDelay);
+        });
+
+        it('should determine a delay correctly when only hardDelay is higher than minDelay', () => {
+            const delayTime = 1;
+            const hardDelayTime = 20;
+            const minDelay = 5;
+
+            const hasDelay = resultPage.trainHasDelay(delayTime, hardDelayTime, minDelay);
+
+            assert.equal(true, hasDelay);
+        });
+
+        it('should determine a delay correctly when only delay is higher than minDelay', () => {
+            const delayTime = 10;
+            const hardDelayTime = 0;
+            const minDelay = 5;
+
+            const hasDelay = resultPage.trainHasDelay(delayTime, hardDelayTime, minDelay);
+
+            assert.equal(true, hasDelay);
+        });
+
+    });
 });

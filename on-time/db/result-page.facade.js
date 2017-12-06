@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const getDelayMessages = async (page, exactDepartureTime, minDelay) => {
     await page.waitFor(2 * 1000);
     const content = await page.content();
-    return parseContent(domContent, exactDepartureTime, minDelay);
+    return parseContent(content, exactDepartureTime, minDelay);
 };
 
 const parseContent = (domContent, exactDepartureTime, minDelay) => {

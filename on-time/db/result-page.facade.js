@@ -16,9 +16,9 @@ const parseContent = (domContent, exactDepartureTime, minDelay) => {
         const departureRow = $(tableRows).eq(0).children('td');
         const arrivalRow = $(tableRows).eq(1).children('td');
         const scheduledStartTime = $(departureRow).eq(1);
-        const startStationName = $(departureRow).eq(0).text();
-        const destinationStationName = $(arrivalRow).eq(0).text();
-        const scheduledDepartureTime = $(scheduledStartTime).clone().children().remove().end().text();
+        const startStationName = $(departureRow).eq(0).text().trim();
+        const destinationStationName = $(arrivalRow).eq(0).text().trim();
+        const scheduledDepartureTime = $(scheduledStartTime).clone().children().remove().end().text().trim();
         const delay = $(scheduledStartTime).children('span.ontime').first().text();
         const hardDelay = $(scheduledStartTime).children('span.delay').first().text();
         const delayTime = parseInt(delay.replace(/\+/g, ''), 10);
@@ -27,9 +27,9 @@ const parseContent = (domContent, exactDepartureTime, minDelay) => {
         if (isNaN(hardDelayTime)) {
             finalDelayTime = delayTime;
         }
-        logConnectionInfo(startStationName, destinationStationName, scheduledDepartureTime, finalDelayTime);
+        //logConnectionInfo(startStationName, destinationStationName, scheduledDepartureTime, finalDelayTime);
         if (trainHasDelay(delayTime, hardDelayTime, minDelay) && exactTimeIsMatching(scheduledDepartureTime, exactDepartureTime)) {
-            const text = "*" + scheduledDepartureTime + "Uhr +" + finalDelayTime + "*\n" + startStationName.trim() + " → " + destinationStationName.trim() + "\n";
+            const text = `*${scheduledDepartureTime} Uhr +${finalDelayTime}*\n${startStationName} → ${destinationStationName}\n`;
             messages.push(text);
         }
     });

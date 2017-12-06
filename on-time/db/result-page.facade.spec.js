@@ -19,7 +19,6 @@ describe('resultPage', () => {
 
         it('should create a message when exactDepartureTime matches', (done) => {
             fs.readFile(__dirname + '/db-site.mock.html', 'utf8', (err, html) => {
-                console.log(html);
                 const expectedMessages = [
                     "*21:32 Uhr +4*\nMüllheim(Baden) → Basel, Bahnhof SBB\n"
                 ];

@@ -27,7 +27,7 @@ const parseContent = (domContent, exactDepartureTime, minDelay) => {
         if (isNaN(hardDelayTime)) {
             finalDelayTime = delayTime;
         }
-        //logConnectionInfo(startStationName, destinationStationName, scheduledDepartureTime, finalDelayTime);
+        logConnectionInfo(startStationName, destinationStationName, scheduledDepartureTime, finalDelayTime);
         if (trainHasDelay(delayTime, hardDelayTime, minDelay) && exactTimeIsMatching(scheduledDepartureTime, exactDepartureTime)) {
             const text = `*${scheduledDepartureTime} Uhr +${finalDelayTime}*\n${startStationName} → ${destinationStationName}\n`;
             messages.push(text);

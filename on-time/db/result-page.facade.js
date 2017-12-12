@@ -1,11 +1,5 @@
 const cheerio = require('cheerio');
 
-const getDelayMessages = async (page, exactDepartureTime, minDelay) => {
-    await page.waitFor(2 * 1000);
-    const content = await page.content();
-    return parseContent(content, exactDepartureTime, minDelay);
-};
-
 const parseContent = (domContent, exactDepartureTime, minDelay) => {
     const messages = [];
     const resultSelector = '#resultsOverview';
@@ -22,7 +16,13 @@ const parseContent = (domContent, exactDepartureTime, minDelay) => {
         const delay = $(scheduledStartTime).children('span.ontime').first().text();
         const hardDelay = $(scheduledStartTime).children('span.delay').first().text();
         const delayTime = parseInt(delay.replace(/\+/g, ''), 10);
-        const hardDelayTime = parseInt(hardDelay.replace(/\+/g, ''), 10);
+        let hardDelayTime = parseInt(hardDelay.replace(/\+/g, ''), 10);
+        if (hardDelay.indexOf(':') !== -1) {
+            const departureTimeHourMinute = exactDepartureTime.split(':');
+            const delayTimeHourMinute = hardDelay.split(':');
+            const minutesDiff = delayTimeHourMinute[1] - departureTimeHourMinute[1];
+            hardDelayTime = (delayTimeHourMinute[0] - departureTimeHourMinute[0]) * 60 + minutesDiff;
+        }
         let finalDelayTime = hardDelayTime;
         if (isNaN(hardDelayTime)) {
             finalDelayTime = delayTime;
@@ -53,7 +53,6 @@ const logConnectionInfo = (startStationName, destinationStationName, scheduledDe
 };
 
 module.exports = {
-    getDelayMessages,
     parseContent,
     trainHasDelay,
     exactTimeIsMatching

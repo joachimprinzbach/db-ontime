@@ -32,11 +32,25 @@ describe('resultPage', () => {
             });
         });
 
-
         it('should create a message when exactDepartureTime matches and delay is more than 5 minutes', (done) => {
             fs.readFile(__dirname + '/db-site.mock2.html', 'utf8', (err, html) => {
                 const expectedMessages = [
                     "*21:32 Uhr +66*\nMüllheim(Baden) → Basel, Bahnhof SBB\n"
+                ];
+                const exactDepartureTime = "21:32";
+                const minDelay = 0;
+
+                const messages = resultPage.parseContent(html, exactDepartureTime, minDelay);
+
+                assert.deepEqual(expectedMessages, messages);
+                done();
+            });
+        });
+
+        it('should create a message when exactDepartureTime matches and delay is a time', (done) => {
+            fs.readFile(__dirname + '/db-site.mock3.html', 'utf8', (err, html) => {
+                const expectedMessages = [
+                    "*21:32 Uhr +33*\nMüllheim(Baden) → Basel, Bahnhof SBB\n"
                 ];
                 const exactDepartureTime = "21:32";
                 const minDelay = 0;

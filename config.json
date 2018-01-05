@@ -141,6 +141,22 @@
       },
       "runOnWeekend": false,
       "minDelay": "5"
+    },
+    {
+      "connectionId": "5",
+      "chatId": "123456789",
+      "start": "Wyhlen",
+      "destination": "Basel Bad Bf",
+      "crawlStart": {
+        "hour": "5",
+        "minute": "1"
+      },
+      "crawlEnd": {
+        "hour": "8",
+        "minute": "1"
+      },
+      "runOnWeekend": false,
+      "minDelay": "2"
     }
   ]
 }

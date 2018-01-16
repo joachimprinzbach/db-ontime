@@ -15,13 +15,19 @@ const parseContent = (domContent, exactDepartureTime, minDelay) => {
         const scheduledDepartureTime = $(scheduledStartTime).clone().children().remove().end().text().trim();
         const delay = $(scheduledStartTime).children('span.ontime').first().text();
         const hardDelay = $(scheduledStartTime).children('span.delay').first().text();
-        const delayTime = parseInt(delay.replace(/\+/g, ''), 10);
+        let delayTime = parseInt(delay.replace(/\+/g, ''), 10);
         let hardDelayTime = parseInt(hardDelay.replace(/\+/g, ''), 10);
         if (hardDelay.indexOf(':') !== -1) {
             const departureTimeHourMinute = exactDepartureTime.split(':');
             const delayTimeHourMinute = hardDelay.split(':');
             const minutesDiff = delayTimeHourMinute[1] - departureTimeHourMinute[1];
             hardDelayTime = (delayTimeHourMinute[0] - departureTimeHourMinute[0]) * 60 + minutesDiff;
+        }
+        if (delay.indexOf(':') !== -1) {
+            const departureTimeHourMinute = exactDepartureTime.split(':');
+            const delayTimeHourMinute = delay.split(':');
+            const minutesDiff = delayTimeHourMinute[1] - departureTimeHourMinute[1];
+            delayTime = (delayTimeHourMinute[0] - departureTimeHourMinute[0]) * 60 + minutesDiff;
         }
         let finalDelayTime = hardDelayTime;
         if (isNaN(hardDelayTime)) {

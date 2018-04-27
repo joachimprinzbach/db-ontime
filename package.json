@@ -6,7 +6,7 @@
     "test": "mocha on-time/**/*.spec.js"
   },
   "engines": {
-    "node": "8.4.0"
+    "node": "10"
   },
   "dependencies": {
     "body-parser": "1.18.2",
